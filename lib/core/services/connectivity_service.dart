@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum ConnectionStatus {
@@ -9,6 +10,9 @@ enum ConnectionStatus {
 class ConnectivityService {
   Stream<ConnectionStatus> get connectivityStream {
     return Connectivity().onConnectivityChanged.map((connectivityResult) {
+      if (kIsWeb) {
+        return ConnectionStatus.connected;
+      }
       if (connectivityResult.contains(ConnectivityResult.none)) {
         return ConnectionStatus.disconnected;
       } else {
@@ -18,12 +22,13 @@ class ConnectivityService {
   }
 
   Future<ConnectionStatus> checkInitialConnection() async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult.contains(ConnectivityResult.none)) {
-      return ConnectionStatus.disconnected;
-    } else {
+    if (kIsWeb) {
       return ConnectionStatus.connected;
     }
+    final connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult.contains(ConnectivityResult.none)
+        ? ConnectionStatus.disconnected
+        : ConnectionStatus.connected;
   }
 }
 

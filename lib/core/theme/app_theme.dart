@@ -5,46 +5,38 @@ import '../constants/colors.dart';
 class AppTheme {
   static ThemeData _base(ColorScheme scheme) {
     final textTheme = TextTheme(
-      // Display/Headlines: Inter (adjusted for modern look)
-      displayLarge: GoogleFonts.inter(
-          fontSize: 34, fontWeight: FontWeight.w700, color: AppColors.darkText),
-      displayMedium: GoogleFonts.inter(
-          fontSize: 28, fontWeight: FontWeight.w700, color: AppColors.darkText),
-      displaySmall: GoogleFonts.inter(
-          fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.darkText),
-      headlineLarge: GoogleFonts.inter(
-          fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.darkText),
-      headlineMedium: GoogleFonts.inter(
-          fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.darkText),
-      headlineSmall: GoogleFonts.inter(
-          fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.darkText),
-      // Body/Title: Inter
-      titleLarge: GoogleFonts.inter(
-          fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.darkText),
-      titleMedium: GoogleFonts.inter(
-          fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.darkText),
-      titleSmall: GoogleFonts.inter(
-          fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.darkText),
-      bodyLarge: GoogleFonts.inter(
-          fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.darkText),
-      bodyMedium: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: AppColors.mediumText),
-      bodySmall: GoogleFonts.inter(
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-          color: AppColors.mediumText),
-      labelLarge: GoogleFonts.inter(
-          fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.darkText),
-      labelMedium: GoogleFonts.inter(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: AppColors.mediumText),
-      labelSmall: GoogleFonts.inter(
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: AppColors.lightText),
+      // Display/Headlines: Roboto (matching Figma designs)
+      displayLarge: GoogleFonts.roboto(
+          fontSize: 40, fontWeight: FontWeight.w500, color: AppColors.darkNavy, height: 1.2, letterSpacing: -0.5),
+      displayMedium: GoogleFonts.roboto(
+          fontSize: 32, fontWeight: FontWeight.w500, color: AppColors.darkNavy, letterSpacing: -0.5),
+      displaySmall: GoogleFonts.roboto(
+          fontSize: 28, fontWeight: FontWeight.w500, color: AppColors.darkNavy, letterSpacing: -0.5),
+      headlineLarge: GoogleFonts.roboto(
+          fontSize: 24, fontWeight: FontWeight.w600, color: AppColors.darkNavy, letterSpacing: -0.5),
+      headlineMedium: GoogleFonts.roboto(
+          fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.darkNavy, letterSpacing: -0.5),
+      headlineSmall: GoogleFonts.roboto(
+          fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.darkNavy, letterSpacing: -0.5),
+      // Body/Title: Roboto
+      titleLarge: GoogleFonts.roboto(
+          fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.darkNavy),
+      titleMedium: GoogleFonts.roboto(
+          fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.darkNavy),
+      titleSmall: GoogleFonts.roboto(
+          fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.darkNavy),
+      bodyLarge: GoogleFonts.roboto(
+          fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.darkNavy, height: 1.5),
+      bodyMedium: GoogleFonts.roboto(
+          fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.slateGrey, height: 1.5),
+      bodySmall: GoogleFonts.roboto(
+          fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.slateGrey, height: 1.5),
+      labelLarge: GoogleFonts.roboto(
+          fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.whiteText),
+      labelMedium: GoogleFonts.roboto(
+          fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.primaryBlurple),
+      labelSmall: GoogleFonts.roboto(
+          fontSize: 13, fontWeight: FontWeight.w400, color: AppColors.slateGrey),
     ).apply(
       bodyColor: scheme.onSurface,
       displayColor: scheme.onSurface,
@@ -54,15 +46,14 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       textTheme: textTheme,
-      scaffoldBackgroundColor: scheme.brightness == Brightness.dark
-          ? AppColors.darkGray
-          : AppColors.lightBackground,
+      scaffoldBackgroundColor: AppColors.white,
       appBarTheme: AppBarTheme(
-        backgroundColor: scheme.surface,
-        foregroundColor: scheme.onSurface,
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.darkNavy,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.roboto(
+          fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.darkNavy,
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -72,33 +63,71 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.borderColor),
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: scheme.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.primaryBlurple, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         filled: true,
-        fillColor: scheme.surfaceContainerHighest,
+        fillColor: AppColors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        hintStyle: GoogleFonts.roboto(
+          fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.slateGrey,
+        ),
       ),
       cardTheme: CardThemeData(
+        color: AppColors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 2,
-        shadowColor: scheme.shadow.withValues(alpha: 0.3),
+        shadowColor: AppColors.shadowMedium,
         surfaceTintColor: Colors.transparent,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: scheme.primaryContainer,
-          foregroundColor: scheme.onPrimaryContainer,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: AppColors.primaryBlurple,
+          foregroundColor: AppColors.whiteText,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          elevation: 2,
+          elevation: 0,
+          shadowColor: AppColors.primaryBlurple.withValues(alpha: 0.4),
+          textStyle: GoogleFonts.roboto(
+            fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.whiteText,
+          ),
         ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryBlurple,
+          side: const BorderSide(color: AppColors.primaryBlurple),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          textStyle: GoogleFonts.roboto(
+            fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.primaryBlurple,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryBlurple,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          textStyle: GoogleFonts.roboto(
+            fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.primaryBlurple,
+          ),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.white,
+        elevation: 3,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: AppColors.primaryBlurple.withValues(alpha: 0.1),
       ),
     );
   }
@@ -106,24 +135,24 @@ class AppTheme {
   static final ThemeData light = _base(
     ColorScheme(
       brightness: Brightness.light,
-      primary: AppColors.primaryBlue,
-      onPrimary: AppColors.darkText,
-      primaryContainer: AppColors.primaryBlue,
-      onPrimaryContainer: AppColors.white,
-      secondary: AppColors.accentOrange,
-      onSecondary: AppColors.white,
-      secondaryContainer: AppColors.accentOrange.withValues(alpha: 0.1),
-      onSecondaryContainer: AppColors.accentOrange,
-      tertiary: AppColors.primaryBlue,
-      onTertiary: AppColors.white,
+      primary: AppColors.primaryBlurple,
+      onPrimary: AppColors.whiteText,
+      primaryContainer: AppColors.primaryBlurple,
+      onPrimaryContainer: AppColors.whiteText,
+      secondary: AppColors.primaryBlurple.withValues(alpha: 0.8),
+      onSecondary: AppColors.whiteText,
+      secondaryContainer: AppColors.primaryBlurple.withValues(alpha: 0.1),
+      onSecondaryContainer: AppColors.primaryBlurple,
+      tertiary: AppColors.accentOrange,
+      onTertiary: AppColors.whiteText,
       error: AppColors.error,
-      onError: AppColors.white,
-      surface: AppColors.cardBackground,
-      onSurface: AppColors.darkText,
+      onError: AppColors.whiteText,
+      surface: AppColors.white,
+      onSurface: AppColors.darkNavy,
       surfaceContainerHighest: AppColors.borderColor,
-      onSurfaceVariant: AppColors.mediumText,
+      onSurfaceVariant: AppColors.slateGrey,
       outline: AppColors.borderColor,
-      shadow: Colors.black12,
+      shadow: AppColors.shadowLight,
     ),
   );
 
@@ -138,16 +167,16 @@ class AppTheme {
       onSecondary: AppColors.clayNude,
       secondaryContainer: AppColors.sageGreen.withValues(alpha: 0.2),
       onSecondaryContainer: AppColors.oliveBrown,
-      tertiary: Colors.orange.shade700, // Terracotta dark variant
-      onTertiary: AppColors.white,
+      tertiary: Colors.orange.shade700,
+      onTertiary: AppColors.whiteText,
       error: AppColors.error,
       onError: Colors.white,
       surface: AppColors.darkGray,
-      onSurface: AppColors.white,
+      onSurface: AppColors.whiteText,
       surfaceContainerHighest: AppColors.textSecondary,
-      onSurfaceVariant: AppColors.mediumText.withValues(alpha: 0.8), // Figma: secondary surface text
-      outline: AppColors.dividerBorder.withValues(alpha: 0.6), // Figma: subtle borders
-      shadow: Colors.black.withValues(alpha: 0.15), // Figma: elevated shadows
+      onSurfaceVariant: AppColors.mediumText.withValues(alpha: 0.8),
+      outline: AppColors.dividerBorder.withValues(alpha: 0.6),
+      shadow: AppColors.shadowStrong,
     ),
   );
 }

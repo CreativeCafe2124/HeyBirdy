@@ -1,176 +1,408 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../data/models/feed_models.dart';
+import '../../../presentation/components/components.dart';
+import '../../../core/constants/colors.dart';
 
-
-import 'package:heybirdy/presentation/components/home_widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/state_management.dart';
-
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Determine the greeting based on the time of day (basic example)
-    String getGreeting() {
-      final hour = DateTime.now().hour;
-      if (hour < 12) return 'Good morning ☀️';
-      if (hour < 17) return 'Good afternoon 🌤️';
-      return 'Good evening 🌙';
-    }
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-    final feedItems = ref.watch(feedProvider);
-    final trendingCreators = ref.watch(trendingCreatorsProvider);
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final String _selectedCategory = 'All';
 
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      // --- Content Area ---
+      backgroundColor: AppColors.lightBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            // Header
+            _buildHeader(),
+
+            // Category Tabs
+            _buildCategoryTabs(),
+
+            // Content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildFeedContent('For You'),
+                  _buildFeedContent('Following'),
+                  _buildFeedContent('Trending'),
+                  _buildFeedContent('New'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      color: AppColors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Greeting Section
+          Row(
             children: [
-              const SizedBox(height: 20),
-              // Greeting (e.g., "Good morning ☀️")
-              Text(
-                getGreeting(),
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Good morning, Alex!',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.darkText,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Ready to create something amazing today?',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.mediumText,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBlurple.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.notifications_outlined,
+                  color: AppColors.primaryBlurple,
+                  size: 24,
+                ),
+              ),
+            ],
+          ),
 
-              // --- Section 1: People are loving today ---
-              const Text(
-                'People are loving today',
+          const SizedBox(height: 16),
+
+          // Search Bar
+          HBSearchInput(
+            hintText: 'Search creators, content, topics...',
+            showFilterButton: true,
+            showClearButton: false,
+            onChanged: (value) {
+              // TODO: Implement search
+            },
+            onFilterTap: () {
+              // TODO: Show filter options
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryTabs() {
+    return Container(
+      color: AppColors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TabBar(
+        controller: _tabController,
+        isScrollable: true,
+        indicatorColor: AppColors.primaryBlurple,
+        labelColor: AppColors.primaryBlurple,
+        unselectedLabelColor: AppColors.mediumText,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+        ),
+        tabs: const [
+          Tab(text: 'For You'),
+          Tab(text: 'Following'),
+          Tab(text: 'Trending'),
+          Tab(text: 'New'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeedContent(String type) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Featured Content
+          _buildFeaturedSection(type),
+
+          const SizedBox(height: 24),
+
+          // Quick Actions
+          _buildQuickActions(),
+
+          const SizedBox(height: 24),
+
+          // People are loving today
+          _buildPeopleLovingSection(),
+
+          const SizedBox(height: 24),
+
+          // Content Feed
+          _buildContentFeed(type),
+
+          const SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeaturedSection(String type) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Featured $type',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.darkText,
+              ),
+            ),
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                // TODO: View all featured
+              },
+              child: const Text(
+                'See all',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
+                  color: AppColors.primaryBlurple,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 180, // Height needed for the cards (Image + Text)
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: feedItems.length,
-                  itemBuilder: (context, index) {
-                    return ContentCard(content: feedItems[index]);
-                  },
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 200,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: const LinearGradient(
+              colors: [AppColors.primaryBlurple, AppColors.accentOrange],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Featured Content
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.accentRed,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'LIVE NOW',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Master Flutter Development',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'with Sarah Chen • 2.3K watching',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
-
-              // --- Section 2: For you ---
-              const Text(
-                'For you',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 180, // Height needed for the horizontal cards
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: feedItems.length,
-                  itemBuilder: (context, index) {
-                    return ContentCard.horizontal(content: feedItems[index]);
-                  },
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // --- Section 3: Trending Creators CTA ---
-              const Text(
-                'Trending creators',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
-                ),
-              ),
-              GenerateLinkBanner(trendingCreators: trendingCreators),
-
-              const SizedBox(
-                  height: 80), // Extra space for bottom nav bar clearance
             ],
           ),
         ),
-      ),
+      ],
+    );
+  }
 
-      // --- Bottom Navigation Bar ---
-      bottomNavigationBar: Container(
+  Widget _buildQuickActions() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildQuickActionCard(
+            'Create',
+            Icons.add_circle_outline,
+            AppColors.primaryBlurple,
+            () {
+              context.go('/create');
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildQuickActionCard(
+            'Explore',
+            Icons.explore_outlined,
+            AppColors.accentOrange,
+            () {
+              context.go('/explore');
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildQuickActionCard(
+            'Wallet',
+            Icons.account_balance_wallet_outlined,
+            AppColors.accentGreen,
+            () {
+              context.go('/wallet');
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionCard(
+      String title, IconData icon, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withAlpha((0.08 * 255).round()),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+              color: AppColors.shadowLight,
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
           ],
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: BottomNavigationBar(
-          elevation: 0,
-          backgroundColor: Colors
-              .transparent, // Make it transparent to show the container's decoration
-          type: BottomNavigationBarType.fixed,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: Colors.grey[400],
-          selectedLabelStyle:
-              const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-          unselectedLabelStyle: const TextStyle(fontSize: 10),
-          currentIndex: 0, // Home is selected
-          onTap: (index) {
-            // Navigation logic (example using GoRouter)
-            switch (index) {
-              case 0:
-                context.go('/home');
-                break;
-              case 4:
-                context.go('/profile'); // Placeholder route
-                break;
-              // Add cases for Explore, Community, Events
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home_filled),
-              label: 'Home',
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: color,
+              size: 24,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: 'Explore',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people_outline),
-              activeIcon: Icon(Icons.people),
-              label: 'Community',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_outlined),
-              activeIcon: Icon(Icons.calendar_today),
-              label: 'Events',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.darkText,
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPeopleLovingSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const HBSectionHeader(title: 'People are loving today'),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: mockPeopleLoving.length,
+            itemBuilder: (context, index) {
+              return HBProfileCard(creator: mockPeopleLoving[index]);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContentFeed(String type) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HBSectionHeader(title: type),
+        const SizedBox(height: 12),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 10, // Show more content items
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: HBContentCard(
+                content: mockForYou[index % mockForYou.length],
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Content details - Coming soon!')),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

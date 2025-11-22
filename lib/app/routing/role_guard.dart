@@ -7,10 +7,10 @@ class RoleGuard {
     final path = state.uri.path;
 
     // Auth guard
-    if (!isAuthed && path != '/splash') {
-      return '/splash';
+    if (!isAuthed && path != '/loading') {
+      return '/loading';
     }
-    if (isAuthed && path == '/splash') {
+    if (isAuthed && path == '/loading') {
       return '/home';
     }
 

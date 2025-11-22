@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../providers/state_management.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/scheduler.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -182,11 +184,16 @@ class _OnboardingScreenState
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(30),
-                    onTap: () {
+                    onTap: () async {
                       if (_selectedTopics.isNotEmpty) {
                         ref.read(selectedInterestsProvider.notifier).state = _selectedTopics;
-                        ref.read(onboardingCompleteProvider.notifier).state = true;
-                        context.go('/home');
+
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('onboarding_complete', true);
+                        SchedulerBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          context.go('/home');
+                        });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

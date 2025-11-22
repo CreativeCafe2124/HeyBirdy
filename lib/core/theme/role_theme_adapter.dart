@@ -19,19 +19,17 @@ Color _getRoleAccent(AppRole? role) {
     case AppRole.guest:
       return Colors.grey[600]!;
     case AppRole.learner:
-      return AppColors.oliveBrown;
+      return AppColors.primaryBlurple; // Updated to use brand color
     case AppRole.creator:
-      // warmTerracotta is now defined in AppColors and should be accessible here
-      return const Color(
-          0xFFE57373); // fallback terracotta tone; replace with correct AppColors getter once defined
+      return AppColors.accentOrange; // Orange for creators
     case AppRole.affiliate:
-      return AppColors.sageGreen;
+      return AppColors.sageGreen; // Green for affiliates
     case AppRole.moderator:
       return AppColors.sandStone;
     case AppRole.admin:
       return AppColors.sandStone;
     default:
-      return AppColors.sandStone;
+      return AppColors.primaryBlurple;
   }
 }
 
@@ -52,7 +50,6 @@ final roleThemeProvider = Provider<ThemeData>((ref) {
   // Create a new ColorScheme, overriding primary/secondary with the role accent.
   final scheme = baseTheme.colorScheme.copyWith(
     primary: accent,
-    // FIXED: Replaced non-standard `withValues` with standard `withOpacity`
     secondary: accent.withValues(alpha: 0.8),
   );
 

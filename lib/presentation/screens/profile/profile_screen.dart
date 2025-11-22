@@ -1,256 +1,636 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProfileScreen extends ConsumerStatefulWidget {
+import '../../../core/constants/colors.dart';
+import '../../components/components.dart';
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  final _usernameController = TextEditingController();
-  final _avatarUrlController = TextEditingController();
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _loadUserProfile();
+    _tabController = TabController(length: 4, vsync: this);
   }
 
-  Future<void> _loadUserProfile() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      _usernameController.text = user.userMetadata?['username'] ?? '';
-      _avatarUrlController.text = user.userMetadata?['avatar_url'] ?? '';
-    }
-  }
-
-  Future<void> _updateUserProfile() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      try {
-        await Supabase.instance.client.auth.updateUser(
-          UserAttributes(
-            data: {
-              'username': _usernameController.text,
-              'avatar_url': _avatarUrlController.text,
-            },
-          ),
-        );
-
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
-        );
-      } catch (e) {
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error updating profile')),
-        );
-      }
-    }
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+      backgroundColor: AppColors.lightBackground,
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            // Status Bar
-            Container(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '9:41',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  const SizedBox(width: 24),
-                ],
-              ),
-            ),
-
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back, color: Colors.grey[800]),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'HeyBirdy — Profile',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Profile Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Profile Avatar Section
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[200],
-                        border: Border.all(
-                          color: Colors.grey[300]!,
-                          width: 2,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.person,
-                        size: 50,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Input Cards
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                        border: Border.all(color: Colors.grey[100]!),
-                      ),
-                      child: Column(
-                        children: [
-                          // Username Field
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: TextField(
-                              controller: _usernameController,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                labelText: 'Username',
-                                labelStyle: TextStyle(color: Colors.grey),
-                              ),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Avatar URL Field
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: TextField(
-                              controller: _avatarUrlController,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                labelText: 'Avatar URL',
-                                labelStyle: TextStyle(color: Colors.grey),
-                              ),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Save Button
-                    Container(
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue[600]!, Colors.blue[400]!],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _updateUserProfile,
-                          borderRadius: BorderRadius.circular(16),
-                          child: const Center(
-                            child: Text(
-                              'Save Profile',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildProfileHeader(),
+            _buildStatsCards(),
+            _buildTabBar(),
+            _buildTabContent(),
           ],
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _avatarUrlController.dispose();
-    super.dispose();
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppColors.white,
+      elevation: 0,
+      title: const Text(
+        'Profile',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.darkText,
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(
+            Icons.share_outlined,
+            color: AppColors.darkText,
+          ),
+          onPressed: () {
+            // TODO: Share profile
+          },
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.settings_outlined,
+            color: AppColors.darkText,
+          ),
+          onPressed: () {
+            // TODO: Navigate to settings
+          },
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Container(
+      color: AppColors.white,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              // Avatar
+              Container(
+                width: 80,
+                height: 80,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primaryBlurple, AppColors.accentOrange],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.person,
+                  color: AppColors.white,
+                  size: 40,
+                ),
+              ),
+              const SizedBox(width: 16),
+
+              // Profile Info
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sarah Johnson',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.darkText,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '@sarahjohnson',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.mediumText,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'UI/UX Designer | Flutter Developer | Creating beautiful mobile experiences',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.mediumText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Action Buttons
+          Row(
+            children: [
+              Expanded(
+                child: HBPrimaryButton(
+                  text: 'Edit Profile',
+                  onPressed: () {
+                    // TODO: Edit profile
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: HBSecondaryButton(
+                  text: 'Share Profile',
+                  onPressed: () {
+                    // TODO: Share profile
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsCards() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildStatCard(
+              'Followers',
+              '12.5K',
+              Icons.people_outline,
+              AppColors.primaryBlurple,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildStatCard(
+              'Posts',
+              '48',
+              Icons.post_add_outlined,
+              AppColors.accentOrange,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildStatCard(
+              'Earnings',
+              '\$2,450',
+              Icons.attach_money_outlined,
+              AppColors.accentGreen,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.darkText,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.mediumText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      color: AppColors.white,
+      child: TabBar(
+        controller: _tabController,
+        indicatorColor: AppColors.primaryBlurple,
+        labelColor: AppColors.primaryBlurple,
+        unselectedLabelColor: AppColors.mediumText,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+        ),
+        tabs: const [
+          Tab(text: 'Posts'),
+          Tab(text: 'Media'),
+          Tab(text: 'Analytics'),
+          Tab(text: 'Settings'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabContent() {
+    return SizedBox(
+      height: 600, // Fixed height for tab content
+      child: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildPostsTab(),
+          _buildMediaTab(),
+          _buildAnalyticsTab(),
+          _buildSettingsTab(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPostsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildSectionHeader('Recent Posts'),
+          const SizedBox(height: 12),
+          _buildPostsGrid(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMediaTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildSectionHeader('Media Gallery'),
+          const SizedBox(height: 12),
+          _buildMediaGrid(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildSectionHeader('Performance Analytics'),
+          const SizedBox(height: 12),
+          _buildAnalyticsCards(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildSectionHeader('Account Settings'),
+          const SizedBox(height: 12),
+          _buildSettingsList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.darkText,
+          ),
+        ),
+        const Spacer(),
+        TextButton(
+          onPressed: () {
+            // TODO: View all
+          },
+          child: const Text(
+            'See all',
+            style: TextStyle(
+              color: AppColors.primaryBlurple,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPostsGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
+      ),
+      itemCount: 6, // Mock data
+      itemBuilder: (context, index) {
+        return _buildPostCard(index);
+      },
+    );
+  }
+
+  Widget _buildPostCard(int index) {
+    final posts = [
+      {'title': 'Flutter Tips', 'likes': '234', 'comments': '12'},
+      {'title': 'UI Design', 'likes': '189', 'comments': '8'},
+      {'title': 'Mobile Dev', 'likes': '456', 'comments': '23'},
+      {'title': 'Best Practices', 'likes': '321', 'comments': '15'},
+      {'title': 'Code Review', 'likes': '278', 'comments': '19'},
+      {'title': 'Tutorial', 'likes': '512', 'comments': '34'},
+    ];
+
+    final post = posts[index % posts.length];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 120,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primaryBlurple, AppColors.accentOrange],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.image_outlined,
+                color: AppColors.white,
+                size: 40,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  post['title'] as String,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkText,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.favorite_border,
+                      size: 16,
+                      color: AppColors.mediumText,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      post['likes'] as String,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.mediumText,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Icon(
+                      Icons.comment_outlined,
+                      size: 16,
+                      color: AppColors.mediumText,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      post['comments'] as String,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.mediumText,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMediaGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 1,
+      ),
+      itemCount: 9, // Mock data
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.offWhite,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(
+            Icons.image_outlined,
+            color: AppColors.mediumText,
+            size: 32,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAnalyticsCards() {
+    return Column(
+      children: [
+        _buildAnalyticsCard('Total Views', '45.2K', Icons.visibility_outlined,
+            AppColors.primaryBlurple),
+        const SizedBox(height: 12),
+        _buildAnalyticsCard('Engagement Rate', '8.5%',
+            Icons.trending_up_outlined, AppColors.accentGreen),
+        const SizedBox(height: 12),
+        _buildAnalyticsCard('Avg. Watch Time', '3:24',
+            Icons.access_time_outlined, AppColors.accentOrange),
+      ],
+    );
+  }
+
+  Widget _buildAnalyticsCard(
+      String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.mediumText,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.darkText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsList() {
+    return Column(
+      children: [
+        _buildSettingsItem('Edit Profile', Icons.person_outline, () {}),
+        _buildSettingsItem(
+            'Notification Settings', Icons.notifications_outlined, () {}),
+        _buildSettingsItem('Privacy Settings', Icons.lock_outline, () {}),
+        _buildSettingsItem('Account Security', Icons.security, () {}),
+        _buildSettingsItem('Payment Methods', Icons.credit_card, () {}),
+        _buildSettingsItem('Help & Support', Icons.help_outline, () {}),
+        _buildSettingsItem('About', Icons.info_outline, () {}),
+        _buildSettingsItem('Sign Out', Icons.logout, () {},
+            isDestructive: true),
+      ],
+    );
+  }
+
+  Widget _buildSettingsItem(String title, IconData icon, VoidCallback onTap,
+      {bool isDestructive = false}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: isDestructive ? AppColors.accentRed : AppColors.mediumText,
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: isDestructive ? AppColors.accentRed : AppColors.darkText,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: isDestructive ? AppColors.accentRed : AppColors.lightText,
+        ),
+        onTap: onTap,
+      ),
+    );
   }
 }

@@ -17,7 +17,8 @@ Future<void> appStartup(Ref ref) async {
   // Stub for prototype demo
   await prefs.setBool('isAuthenticated', true);
   await prefs.setString('userRole', 'learner');
-  await prefs.setBool('onboarding_complete', true);
+
+
 
   const isAuthed = true;
   const roleString = 'learner';
@@ -25,4 +26,5 @@ Future<void> appStartup(Ref ref) async {
       AppRole.values.firstWhere((r) => r.toString() == 'AppRole.$roleString');
   ref.read(isAuthenticatedProvider.notifier).state = isAuthed;
   ref.read(roleProvider.notifier).state = role;
+
 }

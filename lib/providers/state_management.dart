@@ -1,5 +1,7 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../services/referral_service.dart';
 import '../app/app_startup.dart';
 import '../data/models/feed_models.dart'; // Added import for feed_models.dart
@@ -12,103 +14,72 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
 final currentTabProvider = StateProvider<int>((ref) => 0);
 
-final onboardingCompleteProvider = StateProvider<bool>((ref) => false);
+final onboardingCompleteProvider = FutureProvider<bool>((ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('onboarding_complete') ?? false;
+});
 
 final selectedInterestsProvider = StateProvider<Set<String>>((ref) => {});
 
 // Mock Data for Home Feed
-const List<ContentItem> _mockContent = [
-  ContentItem(
-    id: '1',
+const List<ContentCard> _mockContent = [
+  ContentCard(
     title: 'Healthy Smoothie Recipes',
-    description: '5 quick recipes for your morning boost',
-    mediaUrl: 'https://placehold.co/300x200/ff8c00/ffffff?text=Smoothies',
-    creatorId: 'jane',
-    views: 1245,
-    tags: ['Fitness', 'Lifestyle'],
+    imageUrl: 'https://placehold.co/300x200/ff8c00/ffffff?text=Smoothies',
+    creatorName: 'Jane D.',
+    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=J',
   ),
-  ContentItem(
-    id: '2',
+  ContentCard(
     title: 'Financial Freedom Guide',
-    description: 'Step-by-step to financial independence',
-    mediaUrl: 'https://placehold.co/300x200/3cb371/ffffff?text=Finance',
-    creatorId: 'michael',
-    views: 890,
-    tags: ['Finance', 'Business'],
-    affiliateLink: 'https://affiliate.com/finance',
+    imageUrl: 'https://placehold.co/300x200/3cb371/ffffff?text=Finance',
+    creatorName: 'Michael S.',
+    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=M',
   ),
-  ContentItem(
-    id: '3',
+  ContentCard(
     title: 'Mastering Digital Art',
-    description: 'Pro tips for Photoshop and Illustrator',
-    mediaUrl: 'https://placehold.co/300x200/1e90ff/ffffff?text=Art',
-    creatorId: 'anya',
-    views: 2345,
-    tags: ['Beauty', 'Personal Growth'],
+    imageUrl: 'https://placehold.co/300x200/1e90ff/ffffff?text=Art',
+    creatorName: 'Anya P.',
+    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=A',
   ),
-  ContentItem(
-    id: '4',
+  ContentCard(
     title: 'Fitness Rose Yoga Flow',
-    description: '30-min beginner yoga for flexibility',
-    mediaUrl: 'https://placehold.co/300x200/a3e34c/000000?text=Yoga',
-    creatorId: 'rose',
-    views: 567,
-    tags: ['Fitness'],
+    imageUrl: 'https://placehold.co/300x200/a3e34c/000000?text=Yoga',
+    creatorName: 'Rose',
+    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=R',
   ),
-  ContentItem(
-    id: '5',
+  ContentCard(
     title: 'Bizam Arlew Cooking Class',
-    description: 'Easy weeknight dinners under 30 mins',
-    mediaUrl: 'https://placehold.co/300x200/4ce3e3/000000?text=Cooking',
-    creatorId: 'bizam',
-    views: 987,
-    tags: ['Lifestyle'],
+    imageUrl: 'https://placehold.co/300x200/4ce3e3/000000?text=Cooking',
+    creatorName: 'Bizam',
+    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=B',
   ),
 ];
 
-const List<CreatorCardData> _mockTrendingCreators = [
-  CreatorCardData(
-    id: 'emily',
+const List<Creator> _mockTrendingCreators = [
+  Creator(
     name: 'Emily J.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=E',
-    bio: 'Fitness enthusiast and yoga instructor.',
-    followers: 15000,
   ),
-  CreatorCardData(
-    id: 'mark',
+  Creator(
     name: 'Mark T.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=M',
-    bio: 'Financial advisor and business coach.',
-    followers: 20000,
   ),
-  CreatorCardData(
-    id: 'john',
+  Creator(
     name: 'John K.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=J',
-    bio: 'Digital artist and graphic designer.',
-    followers: 10000,
   ),
-  CreatorCardData(
-    id: 'sarah',
+  Creator(
     name: 'Sarah L.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=S',
-    bio: 'Lifestyle blogger and travel expert.',
-    followers: 18000,
   ),
 ];
 
-final feedProvider = Provider<List<ContentItem>>((ref) {
-  final interests = ref.watch(selectedInterestsProvider);
+final feedProvider = Provider<List<ContentCard>>((ref) {
   const allContent = _mockContent;
-  if (interests.isEmpty) return allContent;
-  return allContent.where((item) => 
-    interests.any((interest) => 
-      item.tags.any((tag) => tag.toLowerCase().contains(interest.toLowerCase()))
-    )
-  ).toList();
+  return allContent;
 });
 
-final trendingCreatorsProvider = Provider<List<CreatorCardData>>((ref) => _mockTrendingCreators);
+final trendingCreatorsProvider = Provider<List<Creator>>((ref) => _mockTrendingCreators);
 
 final referralServiceProvider = Provider((ref) => ReferralService());
 
