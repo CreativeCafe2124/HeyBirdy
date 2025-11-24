@@ -24,51 +24,61 @@ final selectedInterestsProvider = StateProvider<Set<String>>((ref) => {});
 // Mock Data for Home Feed
 const List<ContentCard> _mockContent = [
   ContentCard(
+    id: '1',
     title: 'Healthy Smoothie Recipes',
     imageUrl: 'https://placehold.co/300x200/ff8c00/ffffff?text=Smoothies',
     creatorName: 'Jane D.',
     creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=J',
   ),
   ContentCard(
-    title: 'Financial Freedom Guide',
-    imageUrl: 'https://placehold.co/300x200/3cb371/ffffff?text=Finance',
-    creatorName: 'Michael S.',
-    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=M',
+    id: '2',
+    title: 'Web Development Basics',
+    imageUrl: 'https://placehold.co/300x200/0066cc/ffffff?text=WebDev',
+    creatorName: 'John K.',
+    creatorAvatarUrl: 'https://placehold.co/40x40/cc0066/ffffff?text=K',
   ),
   ContentCard(
-    title: 'Mastering Digital Art',
-    imageUrl: 'https://placehold.co/300x200/1e90ff/ffffff?text=Art',
-    creatorName: 'Anya P.',
-    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=A',
-  ),
-  ContentCard(
-    title: 'Fitness Rose Yoga Flow',
-    imageUrl: 'https://placehold.co/300x200/a3e34c/000000?text=Yoga',
-    creatorName: 'Rose',
-    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=R',
-  ),
-  ContentCard(
-    title: 'Bizam Arlew Cooking Class',
-    imageUrl: 'https://placehold.co/300x200/4ce3e3/000000?text=Cooking',
-    creatorName: 'Bizam',
-    creatorAvatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=B',
+    id: '3',
+    title: 'Yoga for Beginners',
+    imageUrl: 'https://placehold.co/300x200/00cc66/ffffff?text=Yoga',
+    creatorName: 'Sarah L.',
+    creatorAvatarUrl: 'https://placehold.co/40x40/6600cc/ffffff?text=S',
   ),
 ];
 
 const List<Creator> _mockTrendingCreators = [
   Creator(
+    id: '1',
+    name: 'Jane D.',
+    avatarUrl: 'https://placehold.co/60x60/4c3ee3/ffffff?text=J',
+  ),
+  Creator(
+    id: '2',
+    name: 'John K.',
+    avatarUrl: 'https://placehold.co/60x60/cc0066/ffffff?text=K',
+  ),
+  Creator(
+    id: '3',
+    name: 'Sarah L.',
+    avatarUrl: 'https://placehold.co/60x60/6600cc/ffffff?text=S',
+  ),
+  Creator(
+    id: '4',
     name: 'Emily J.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=E',
   ),
   Creator(
+    id: '5',
     name: 'Mark T.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=M',
   ),
   Creator(
+    id: '6',
     name: 'John K.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=J',
   ),
   Creator(
+    id: '7',
     name: 'Sarah L.',
     avatarUrl: 'https://placehold.co/40x40/4c3ee3/ffffff?text=S',
   ),

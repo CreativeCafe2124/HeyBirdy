@@ -32,8 +32,8 @@ class HBCreatorCTABanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
           colors: [
-            AppColors.primaryBlurple.withOpacity(0.1),
-            AppColors.accentOrange.withOpacity(0.1),
+            AppColors.primaryBlurple.withValues(alpha: 0.1),
+            AppColors.accentOrange.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

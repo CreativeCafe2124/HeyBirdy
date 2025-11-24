@@ -29,56 +29,23 @@ class _ExploreScreenState extends State<ExploreScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          _buildCategoryFilter(),
-          _buildTabBar(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildContentGrid('trending'),
-                _buildContentGrid('new'),
-                _buildContentGrid('following'),
-                _buildContentGrid('saved'),
-                _buildContentGrid('recommended'),
-              ],
-            ),
+    return Column(
+      children: [
+        _buildSearchBar(),
+        _buildCategoryFilter(),
+        _buildTabBar(),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildContentGrid('trending'),
+              _buildContentGrid('new'),
+              _buildContentGrid('following'),
+              _buildContentGrid('saved'),
+              _buildContentGrid('recommended'),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      title: const Text(
-        'Explore',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.darkText,
         ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.notifications_outlined,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Notifications - Coming soon!')),
-            );
-          },
-        ),
-        const SizedBox(width: 8),
       ],
     );
   }
@@ -135,7 +102,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 });
               },
               backgroundColor: AppColors.white,
-              selectedColor: AppColors.primaryBlurple.withOpacity(0.1),
+              selectedColor: AppColors.primaryBlurple.withValues(alpha: 0.1),
               labelStyle: TextStyle(
                 color:
                     isSelected ? AppColors.primaryBlurple : AppColors.darkText,
@@ -434,7 +401,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 // TODO: Apply filter
               },
               backgroundColor: AppColors.lightBackground,
-              selectedColor: AppColors.primaryBlurple.withOpacity(0.1),
+              selectedColor: AppColors.primaryBlurple.withValues(alpha: 0.1),
               labelStyle: const TextStyle(
                 color: AppColors.darkText,
                 fontSize: 12,

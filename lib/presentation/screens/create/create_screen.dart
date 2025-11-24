@@ -154,7 +154,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen>
         onClosePressed: () {
           context.pop();
         },
-        onPublishPressed: _isPublishing ? null : _createPost,
+        onPublishPressed: _isPublishing ? () {} : () => _createPost(),
         isPublishing: _isPublishing,
       ),
       body: Column(

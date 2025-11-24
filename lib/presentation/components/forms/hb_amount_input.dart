@@ -103,10 +103,12 @@ class _HBAmountInputState extends State<HBAmountInput> {
     if (amount != null) {
       // Apply min/max constraints
       final constrainedAmount = amount;
-      if (widget.minAmount != null && constrainedAmount < widget.minAmount!)
+      if (widget.minAmount != null && constrainedAmount < widget.minAmount!) {
         return;
-      if (widget.maxAmount != null && constrainedAmount > widget.maxAmount!)
+      }
+      if (widget.maxAmount != null && constrainedAmount > widget.maxAmount!) {
         return;
+      }
 
       widget.onChanged?.call(constrainedAmount);
     }
@@ -161,7 +163,7 @@ class _HBAmountInputState extends State<HBAmountInput> {
           decoration: BoxDecoration(
             color: widget.enabled
                 ? AppColors.offWhite
-                : AppColors.borderColor.withOpacity(0.3),
+                : AppColors.borderColor.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: widget.errorText != null

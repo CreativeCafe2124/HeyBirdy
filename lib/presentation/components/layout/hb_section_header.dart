@@ -25,30 +25,28 @@ class HBSectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: mainAxisAlignment,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.mediumText,
+              ),
+            ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 4),
               Text(
-                title,
+                subtitle!,
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
                   color: AppColors.mediumText,
                 ),
               ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  subtitle!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.mediumText,
-                  ),
-                ),
-              ],
             ],
-          ),
+          ],
         ),
         if (actionText != null)
           GestureDetector(

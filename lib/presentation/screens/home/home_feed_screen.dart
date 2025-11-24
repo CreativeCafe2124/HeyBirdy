@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../providers/home_provider.dart';
 import '../../../data/models/feed_models.dart';
-import '../../../presentation/components/components.dart';
 import '../../../core/constants/colors.dart';
+import 'widgets/home_header.dart';
+import 'widgets/home_category_tabs.dart';
+import 'widgets/home_feed_content.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final String _selectedCategory = 'All';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+
+    // Load initial data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(homeProvider.notifier).loadInitialData();
+    });
   }
 
   @override
@@ -30,379 +38,266 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(),
+    final homeState = ref.watch(homeProvider);
+    final homeNotifier = ref.read(homeProvider.notifier);
 
-            // Category Tabs
-            _buildCategoryTabs(),
+    // Handle errors
+    ref.listen(homeProvider, (_, state) {
+      if (state.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(state.error!)),
+        );
+        homeNotifier.clearError();
+      }
+    });
 
-            // Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildFeedContent('For You'),
-                  _buildFeedContent('Following'),
-                  _buildFeedContent('Trending'),
-                  _buildFeedContent('New'),
-                ],
+    return SafeArea(
+      child: homeState.isLoading && homeState.contentFeed.isEmpty
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryBlurple,
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      color: AppColors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Greeting Section
-          Row(
-            children: [
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Good morning, Alex!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.darkText,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Ready to create something amazing today?',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.mediumText,
-                      ),
-                    ),
-                  ],
+            )
+          : Column(
+              children: [
+                // Header
+                HomeHeader(
+                  userName: 'Alex',
+                  greeting: _getGreeting(),
+                  onNotificationTap: () => _handleNotificationTap(),
+                  onSearchChanged: (value) =>
+                      homeNotifier.updateSearchQuery(value),
+                  onFilterTap: () => _handleFilterTap(),
+                  showSearch: false,
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBlurple.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+
+                // Category Tabs
+                HomeCategoryTabs(
+                  tabController: _tabController,
+                  tabs: const ['For You', 'Following', 'Trending', 'New'],
                 ),
-                child: const Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.primaryBlurple,
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
 
-          const SizedBox(height: 16),
-
-          // Search Bar
-          HBSearchInput(
-            hintText: 'Search creators, content, topics...',
-            showFilterButton: true,
-            showClearButton: false,
-            onChanged: (value) {
-              // TODO: Implement search
-            },
-            onFilterTap: () {
-              // TODO: Show filter options
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryTabs() {
-    return Container(
-      color: AppColors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: true,
-        indicatorColor: AppColors.primaryBlurple,
-        labelColor: AppColors.primaryBlurple,
-        unselectedLabelColor: AppColors.mediumText,
-        labelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-        ),
-        tabs: const [
-          Tab(text: 'For You'),
-          Tab(text: 'Following'),
-          Tab(text: 'Trending'),
-          Tab(text: 'New'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeedContent(String type) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Featured Content
-          _buildFeaturedSection(type),
-
-          const SizedBox(height: 24),
-
-          // Quick Actions
-          _buildQuickActions(),
-
-          const SizedBox(height: 24),
-
-          // People are loving today
-          _buildPeopleLovingSection(),
-
-          const SizedBox(height: 24),
-
-          // Content Feed
-          _buildContentFeed(type),
-
-          const SizedBox(height: 80),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeaturedSection(String type) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Featured $type',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.darkText,
-              ),
-            ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {
-                // TODO: View all featured
-              },
-              child: const Text(
-                'See all',
-                style: TextStyle(
-                  color: AppColors.primaryBlurple,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [AppColors.primaryBlurple, AppColors.accentOrange],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Stack(
-            children: [
-              // Featured Content
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
+                // Debug Info
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: AppColors.offWhite,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.accentRed,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'LIVE NOW',
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      Text(
+                        'DEBUG: Loading=${homeState.isLoading}',
+                        style: const TextStyle(
+                            fontSize: 9, color: AppColors.mediumText),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Master Flutter Development',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
+                      Text(
+                        'Feed=${homeState.contentFeed.length}, Featured=${homeState.featuredContent != null ? homeState.featuredContent!.title.substring(0, 15) : "none"}',
+                        style: const TextStyle(
+                            fontSize: 9, color: AppColors.mediumText),
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'with Sarah Chen • 2.3K watching',
+                      Text(
+                        'People=${homeState.peopleLoving.length}, Error=${homeState.error ?? "none"}',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.white,
+                          fontSize: 9,
+                          color: homeState.error != null
+                              ? AppColors.accentRed
+                              : AppColors.mediumText,
                         ),
                       ),
                     ],
                   ),
                 ),
+
+                // Content
+                Expanded(
+                  child: homeState.contentFeed.isEmpty && !homeState.isLoading
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.inbox_outlined,
+                                    size: 64, color: AppColors.lightText),
+                                SizedBox(height: 16),
+                                Text(
+                                  'No content available',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Content will appear here',
+                                  style: TextStyle(color: AppColors.mediumText),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildFeedContent(
+                                'For You', homeState, homeNotifier),
+                            _buildFeedContent(
+                                'Following', homeState, homeNotifier),
+                            _buildFeedContent(
+                                'Trending', homeState, homeNotifier),
+                            _buildFeedContent('New', homeState, homeNotifier),
+                        ],
+                      ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  // Navigation Handlers
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good morning, Alex!';
+    } else if (hour < 17) {
+      return 'Good afternoon, Alex!';
+    } else {
+      return 'Good evening, Alex!';
+    }
+  }
+
+  void _handleNotificationTap() {
+    context.go('/profile/notifications');
+  }
+
+  void _handleFilterTap() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => const _FilterBottomSheet(),
+    );
+  }
+
+  void _handleFeaturedTap() {
+    if (mockForYou.isNotEmpty) {
+      context.go('/content/${mockForYou.first.id}');
+    }
+  }
+
+  void _handleViewAllFeatured() {
+    context.go('/featured');
+  }
+
+  void _handleProfileTap(Creator creator) {
+    context.go('/profile/${creator.id}');
+  }
+
+  void _handleContentTap(ContentCard content) {
+    context.go('/content/${content.id}');
+  }
+
+  void _handleViewAllContent(String type) {
+    context.go('/content?type=${type.toLowerCase().replaceAll(' ', '-')}');
+  }
+
+  Widget _buildFeedContent(
+      String type, HomeState homeState, HomeNotifier homeNotifier) {
+    return HomeFeedContent(
+      type: type,
+      featuredContent: homeState.featuredContent,
+      peopleLoving: homeState.peopleLoving,
+      contentFeed: homeState.contentFeed,
+      isLoading: homeState.isLoading,
+      onFeaturedTap: () => _handleFeaturedTap(),
+      onViewAllFeatured: () => _handleViewAllFeatured(),
+      onProfileTap: (profile) => _handleProfileTap(profile),
+      onContentTap: (content) => _handleContentTap(content),
+      onViewAllContent: (type) => _handleViewAllContent(type),
+    );
+  }
+}
+
+/// Filter bottom sheet for content filtering
+class _FilterBottomSheet extends StatelessWidget {
+  const _FilterBottomSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'Filter Content',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.darkText,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
               ),
             ],
           ),
-        ),
-      ],
-    );
-  }
+          const SizedBox(height: 20),
 
-  Widget _buildQuickActions() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildQuickActionCard(
-            'Create',
-            Icons.add_circle_outline,
-            AppColors.primaryBlurple,
-            () {
-              context.go('/create');
-            },
+          // Filter options
+          const Text('Content Type'),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: ['All', 'Videos', 'Articles', 'Podcasts', 'Courses']
+                .map((type) => GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Apply filter logic here
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Filter by: $type')),
+                        );
+                      },
+                      child: Chip(label: Text(type)),
+                    ))
+                .toList(),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildQuickActionCard(
-            'Explore',
-            Icons.explore_outlined,
-            AppColors.accentOrange,
-            () {
-              context.go('/explore');
-            },
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildQuickActionCard(
-            'Wallet',
-            Icons.account_balance_wallet_outlined,
-            AppColors.accentGreen,
-            () {
-              context.go('/wallet');
-            },
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildQuickActionCard(
-      String title, IconData icon, Color color, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.shadowLight,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.darkText,
+          const SizedBox(height: 20),
+          const Text('Sort By'),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: ['Recent', 'Popular', 'Trending']
+                .map((sort) => GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Apply sorting logic here
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Sort by: $sort')),
+                        );
+                      },
+                      child: Chip(label: Text(sort)),
+                    ))
+                .toList(),
+          ),
+
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlurple,
+                foregroundColor: AppColors.white,
               ),
+              child: const Text('Apply Filters'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildPeopleLovingSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const HBSectionHeader(title: 'People are loving today'),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: mockPeopleLoving.length,
-            itemBuilder: (context, index) {
-              return HBProfileCard(creator: mockPeopleLoving[index]);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildContentFeed(String type) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        HBSectionHeader(title: type),
-        const SizedBox(height: 12),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 10, // Show more content items
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: HBContentCard(
-                content: mockForYou[index % mockForYou.length],
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Content details - Coming soon!')),
-                  );
-                },
-              ),
-            );
-          },
-        ),
-      ],
     );
   }
 }

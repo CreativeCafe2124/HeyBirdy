@@ -36,7 +36,7 @@ class HBMediaUpload extends StatelessWidget {
             color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.primaryBlurple.withOpacity(0.3),
+              color: AppColors.primaryBlurple.withValues(alpha: 0.3),
               style: BorderStyle.solid,
               width: 2,
             ),
@@ -53,7 +53,7 @@ class HBMediaUpload extends StatelessWidget {
                       right: 8,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: AppColors.darkText.withOpacity(0.5),
+                          color: AppColors.darkText.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(

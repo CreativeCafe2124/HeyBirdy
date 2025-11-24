@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/colors.dart';
 import 'hb_section_header.dart';
 import 'hb_filter_chip.dart';
 

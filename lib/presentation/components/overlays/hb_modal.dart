@@ -237,7 +237,7 @@ class HBInfoModal extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: (iconColor ?? AppColors.primaryBlurple).withOpacity(0.1),
+                color: (iconColor ?? AppColors.primaryBlurple).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

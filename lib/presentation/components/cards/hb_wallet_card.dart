@@ -66,7 +66,7 @@ class HBWalletCard extends StatelessWidget {
                         height: 48,
                         decoration: BoxDecoration(
                           color: (categoryColor ?? AppColors.primaryBlurple)
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -219,7 +219,7 @@ class HBWalletBalanceCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             AppColors.primaryBlurple,
-            AppColors.primaryBlurple.withOpacity(0.8),
+            AppColors.primaryBlurple.withValues(alpha: 0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -227,7 +227,7 @@ class HBWalletBalanceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlurple.withOpacity(0.3),
+            color: AppColors.primaryBlurple.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -283,20 +283,20 @@ class HBWalletBalanceCard extends StatelessWidget {
                   child: _buildStatItem(
                     'Income',
                     '+$currencySymbol${income.toStringAsFixed(2)}',
-                    AppColors.white.withOpacity(0.8),
+                    AppColors.white.withValues(alpha: 0.8),
                     true,
                   ),
                 ),
                 Container(
                   width: 1,
                   height: 40,
-                  color: AppColors.white.withOpacity(0.3),
+                  color: AppColors.white.withValues(alpha: 0.3),
                 ),
                 Expanded(
                   child: _buildStatItem(
                     'Expenses',
                     '-$currencySymbol${expenses.toStringAsFixed(2)}',
-                    AppColors.white.withOpacity(0.8),
+                    AppColors.white.withValues(alpha: 0.8),
                     false,
                   ),
                 ),

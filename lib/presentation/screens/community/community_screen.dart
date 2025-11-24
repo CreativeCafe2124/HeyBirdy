@@ -27,52 +27,20 @@ class _CommunityScreenState extends State<CommunityScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildTabBar(),
-          _buildSearchBar(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildGroupsTab(),
-                _buildForumsTab(),
-                _buildEventsTab(),
-              ],
-            ),
+    return Column(
+      children: [
+        _buildTabBar(),
+        _buildSearchBar(),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildGroupsTab(),
+              _buildForumsTab(),
+              _buildEventsTab(),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: _buildFloatingActionButton(),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      title: const Text(
-        'Community',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.darkText,
         ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.search,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            // TODO: Implement search functionality
-          },
-        ),
-        const SizedBox(width: 8),
       ],
     );
   }
@@ -225,7 +193,7 @@ class _CommunityScreenState extends State<CommunityScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.2),
+                color: AppColors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -323,7 +291,7 @@ class _CommunityScreenState extends State<CommunityScreen>
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.primaryBlurple.withOpacity(0.1),
+              color: AppColors.primaryBlurple.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -413,19 +381,6 @@ class _CommunityScreenState extends State<CommunityScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        // TODO: Create new community
-      },
-      backgroundColor: AppColors.primaryBlurple,
-      child: const Icon(
-        Icons.add,
-        color: AppColors.white,
       ),
     );
   }

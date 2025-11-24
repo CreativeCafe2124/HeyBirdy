@@ -27,51 +27,20 @@ class _EventsScreenState extends State<EventsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildTabBar(),
-          _buildSearchAndFilter(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildUpcomingEvents(),
-                _buildLiveEvents(),
-                _buildPastEvents(),
-              ],
-            ),
+    return Column(
+      children: [
+        _buildTabBar(),
+        _buildSearchAndFilter(),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildUpcomingEvents(),
+              _buildLiveEvents(),
+              _buildPastEvents(),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      title: const Text(
-        'Live Events',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.darkText,
         ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.notifications_outlined,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            // TODO: Show notifications
-          },
-        ),
-        const SizedBox(width: 8),
       ],
     );
   }

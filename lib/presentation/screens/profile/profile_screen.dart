@@ -28,55 +28,15 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildProfileHeader(),
-            _buildStatsCards(),
-            _buildTabBar(),
-            _buildTabContent(),
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildProfileHeader(),
+          _buildStatsCards(),
+          _buildTabBar(),
+          _buildTabContent(),
+        ],
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      title: const Text(
-        'Profile',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.darkText,
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.share_outlined,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            // TODO: Share profile
-          },
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.settings_outlined,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            // TODO: Navigate to settings
-          },
-        ),
-        const SizedBox(width: 8),
-      ],
     );
   }
 
@@ -553,7 +513,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(

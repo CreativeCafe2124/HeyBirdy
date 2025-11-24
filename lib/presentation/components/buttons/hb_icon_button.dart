@@ -28,7 +28,7 @@ class HBIconButton extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.accentOrange.withOpacity(0.1),
+        color: backgroundColor ?? AppColors.accentOrange.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(size! / 2),
       ),
       child: Material(

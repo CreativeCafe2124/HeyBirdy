@@ -28,61 +28,21 @@ class _WalletScreenState extends State<WalletScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildBalanceCard(),
-          _buildQuickActions(),
-          _buildTabBar(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildTransactionList('all'),
-                _buildTransactionList('income'),
-                _buildTransactionList('expense'),
-              ],
-            ),
+    return Column(
+      children: [
+        _buildBalanceCard(),
+        _buildQuickActions(),
+        _buildTabBar(),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildTransactionList('all'),
+              _buildTransactionList('income'),
+              _buildTransactionList('expense'),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      title: const Text(
-        'Wallet',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.darkText,
         ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.history_outlined,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            // TODO: Show transaction history
-          },
-        ),
-        IconButton(
-          icon: const Icon(
-            Icons.settings_outlined,
-            color: AppColors.darkText,
-          ),
-          onPressed: () {
-            // TODO: Show wallet settings
-          },
-        ),
-        const SizedBox(width: 8),
       ],
     );
   }
@@ -100,7 +60,7 @@ class _WalletScreenState extends State<WalletScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryBlurple.withOpacity(0.3),
+            color: AppColors.primaryBlurple.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -158,7 +118,7 @@ class _WalletScreenState extends State<WalletScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.white.withOpacity(0.2),
+        color: AppColors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -400,7 +360,7 @@ class _WalletScreenState extends State<WalletScreen>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: (isIncome ? AppColors.accentGreen : AppColors.accentRed)
-                  .withOpacity(0.1),
+                  .withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(

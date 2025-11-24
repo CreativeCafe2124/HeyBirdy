@@ -20,7 +20,7 @@ class HBFilterChip extends StatelessWidget {
       selected: isSelected,
       onSelected: onSelected,
       backgroundColor: AppColors.white,
-      selectedColor: AppColors.primaryBlurple.withOpacity(0.1),
+      selectedColor: AppColors.primaryBlurple.withValues(alpha: 0.1),
       labelStyle: TextStyle(
         color: isSelected ? AppColors.primaryBlurple : AppColors.darkText,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,

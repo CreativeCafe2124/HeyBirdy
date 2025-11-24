@@ -95,7 +95,7 @@ class HBHeaderBar extends StatelessWidget {
                               icon: Icons.wb_sunny,
                               size: 52,
                               backgroundColor:
-                                  AppColors.accentOrange.withOpacity(0.1),
+                                  AppColors.accentOrange.withValues(alpha: 0.1),
                               iconColor: AppColors.accentOrange,
                             ),
                           ]

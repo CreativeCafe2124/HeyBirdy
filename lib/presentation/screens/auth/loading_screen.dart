@@ -2,8 +2,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/services/connectivity_service.dart';
-import '../../../providers/state_management.dart';
 import '../../../core/constants/colors.dart';
 
 class LoadingScreen extends ConsumerStatefulWidget {
@@ -35,23 +33,10 @@ class _LoadingScreenState extends ConsumerState<LoadingScreen> {
       if (widget.onComplete != null) {
         widget.onComplete!();
       } else {
-        final connectivityService = ref.read(connectivityServiceProvider);
-        final initialStatus =
-            await connectivityService.checkInitialConnection();
-        if (initialStatus == ConnectionStatus.disconnected) {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            context.go('/offline');
-          });
-        } else if (mounted) {
-          final bool onboardingComplete = await ref.read(onboardingCompleteProvider.future);
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            if (onboardingComplete) {
-              context.go('/home');
-            } else {
-              context.go('/get-started');
-            }
-          });
-        }
+        // Simplified: always go to home after loading
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          context.go('/home');
+        });
       }
     }
   }

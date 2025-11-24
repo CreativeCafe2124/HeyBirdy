@@ -37,7 +37,7 @@ class HBPrimaryButton extends StatelessWidget {
         boxShadow: onPressed != null && !isLoading
             ? [
                 BoxShadow(
-                  color: AppColors.primaryBlurple.withOpacity(0.4),
+                  color: AppColors.primaryBlurple.withValues(alpha: 0.4),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),

@@ -18,6 +18,11 @@ export 'forms/hb_text_input.dart';
 export 'forms/hb_search_input.dart';
 export 'forms/hb_amount_input.dart';
 
+// Settings
+export 'hb_switch_tile.dart';
+export 'hb_affiliate_settings.dart';
+export 'hb_pricing_settings.dart';
+
 // User Elements
 export 'user/hb_avatar_stack.dart';
 

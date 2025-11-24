@@ -23,7 +23,7 @@ import '../../presentation/screens/community/community_screen.dart';
 class AppRouter {
   static GoRouter buildRouter(AppRole? role, bool isAuthed, WidgetRef ref) {
     return GoRouter(
-      initialLocation: '/loading',
+      initialLocation: '/home',
       routes: <RouteBase>[
         GoRoute(
             path: '/loading',
@@ -49,14 +49,14 @@ class AppRouter {
             path: '/onboarding',
             name: 'onboarding',
             builder: (context, state) => const OnboardingScreen()),
-        
+
         // Main app with bottom navigation
         ShellRoute(
-          builder: (context, state, child) => Consumer(
-            builder: (context, ref, child) {
+          builder: (context, state, shellChild) => Consumer(
+            builder: (context, ref, _) {
               final location = state.uri.toString();
               int tabIndex = 0;
-              
+
               // Determine tab index based on current path
               if (location.startsWith('/home')) {
                 tabIndex = 0;
@@ -69,22 +69,24 @@ class AppRouter {
               } else if (location.startsWith('/profile')) {
                 tabIndex = 4;
               }
-              
+
               // Update tab provider if needed
               final currentTab = ref.read(currentTabProvider);
               if (currentTab != tabIndex) {
-                ref.read(currentTabProvider.notifier).state = tabIndex;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ref.read(currentTabProvider.notifier).state = tabIndex;
+                });
               }
-              
+
               return Scaffold(
-                body: child,
+                body: SafeArea(child: shellChild),
                 bottomNavigationBar: HBBottomNavBar(
                   currentIndex: tabIndex,
                   onTap: (index) {
                     ref.read(currentTabProvider.notifier).state = index;
                     const paths = [
                       '/home',
-                      '/explore', 
+                      '/explore',
                       '/community',
                       '/events',
                       '/profile',
@@ -97,8 +99,7 @@ class AppRouter {
           ),
           routes: [
             GoRoute(
-                path: '/home',
-                builder: (context, state) => const HomeScreen()),
+                path: '/home', builder: (context, state) => const HomeScreen()),
             GoRoute(
                 path: '/explore',
                 builder: (context, state) => const ExploreScreen()),
@@ -116,7 +117,8 @@ class AppRouter {
               ],
               redirect: (context, state) {
                 final AppRole? currentRole = ref.read(roleProvider);
-                if (currentRole != AppRole.creator && !state.uri.toString().contains('/upgrade')) {
+                if (currentRole != AppRole.creator &&
+                    !state.uri.toString().contains('/upgrade')) {
                   return '/create/upgrade';
                 }
                 return null;

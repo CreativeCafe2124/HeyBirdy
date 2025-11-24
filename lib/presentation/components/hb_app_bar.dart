@@ -7,13 +7,13 @@ class HBAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     required this.onClosePressed,
-    required this.onPublishPressed,
+    this.onPublishPressed,
     required this.isPublishing,
   });
 
   final String title;
   final VoidCallback onClosePressed;
-  final VoidCallback onPublishPressed;
+  final VoidCallback? onPublishPressed;
   final bool isPublishing;
 
   @override
